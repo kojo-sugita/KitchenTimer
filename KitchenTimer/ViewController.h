@@ -11,10 +11,21 @@
 
 @interface ViewController : UIViewController {
     CountdownTimer *timer;
+    BOOL isPause;
 }
 
-- (IBAction)startButton:(id)sender;
-- (IBAction)stopButton:(id)sender;
+//- (IBAction)startButton:(id)sender;
+//- (IBAction)stopButton:(id)sender;
+//- (IBAction)pauseButton:(id)sender;
+@property (weak, nonatomic) IBOutlet UIButton *startButton;
+@property (weak, nonatomic) IBOutlet UIButton *pauseButton;
+@property (weak, nonatomic) IBOutlet UIButton *stopButton;
+
+- (IBAction)tapped_startButton:(id)sender;
+- (IBAction)tapped_pauseButton:(id)sender;
+- (IBAction)tapped_stopButton:(id)sender;
+
+
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 
 @end

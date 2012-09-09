@@ -10,11 +10,11 @@
 
 @interface CountdownTimer : NSObject {
     NSDate *startDate;    
-    NSTimer *timer;
-    
     NSNotification *notification;
+    CGFloat pauseTime;
 }
 
+@property NSTimer *timer;
 @property CGFloat clock;
 @property CGFloat countdownTime;
 @property NSString *timerNoticefication;
@@ -22,9 +22,13 @@
 
 + (CountdownTimer *)sharedInstance;
 
+//- (void)setTimer:(CGFloat)_countdownTime clock:(CGFloat)_clock;
+//- (void)start;
+
 - (void)start:(CGFloat)_countdownTime clock:(CGFloat)_clock;
 - (void)start:(CGFloat)_countdownTime;
+- (void)restart;
 - (NSTimeInterval)stop;
-- (void)pause;
+- (NSTimeInterval)pause;
 
 @end

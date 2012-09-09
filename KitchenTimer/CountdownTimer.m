@@ -14,6 +14,7 @@
 @synthesize countdownTime;
 @synthesize timerNoticefication;
 @synthesize notifyEachRound;
+@synthesize timer;
 
 // 本クラスのインスタンス
 static CountdownTimer *myInstance;
@@ -51,6 +52,10 @@ static CountdownTimer *myInstance;
     timerNoticefication = @"TimerNoticefication";
 }
 
+/**
+ * 通知を設定する
+ * @param noticeTime 通知する時間
+ */
 - (void)setNotification:(CGFloat)noticeTime
 {
     // 通知の受取側に送る値を作成する
@@ -60,6 +65,34 @@ static CountdownTimer *myInstance;
     // 通知を作成する
     notification = [NSNotification notificationWithName:timerNoticefication object:self userInfo:sendData];
 }
+
+//- (void)setTimer:(CGFloat)_countdownTime clock:(CGFloat)_clock
+//{
+//    NSMethodSignature *methodSignature = [self methodSignatureForSelector:@selector(doTimer:)];
+//    
+//    // 呼び出し情報の作成
+//    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+//    [invocation setTarget:self];
+//    [invocation setSelector:@selector(doTimer:)];
+//    
+//    // タイマーからコールされるメソッドに渡す変数を呼び出し情報に登録
+//    NSDate *sDate = [NSDate date];
+//    [invocation setArgument:&sDate atIndex:2];
+//    
+//    NSTimer *t = [NSTimer timerWithTimeInterval:clock invocation:invocation repeats:YES];
+//    timer = t;
+//    
+//    self.countdownTime = _countdownTime;
+//}
+
+//- (void)start
+//{
+//    if (timer != nil) {
+//        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+//        [runLoop addTimer:timer forMode:NSDefaultRunLoopMode];
+//        
+//    }
+//}
 
 /**
  * 時間計測開始（終了時間に達したときに通知）
@@ -97,7 +130,12 @@ static CountdownTimer *myInstance;
     [self setNotification:self.countdownTime];
     
     if (self.clock == 0.0f) {
-        self.clock = 0.25f;
+        self.clock = 0.5f;
+    }
+
+    if (timer != nil) {
+        [timer invalidate];
+        timer = nil;
     }
     
     // タイマーセット
@@ -105,7 +143,7 @@ static CountdownTimer *myInstance;
                                              target:self 
                                            selector:@selector(doTimer:) 
                                            userInfo:nil 
-                                            repeats:YES];
+                                            repeats:YES];        
 }
 
 /**
@@ -116,15 +154,44 @@ static CountdownTimer *myInstance;
 {
     [timer invalidate];
     timer = nil;
+    
     return [[NSDate date] timeIntervalSinceDate:startDate];
 }
 
 /**
- * 時間計測一時停止
+ * 一時停止したタイマーを起動する
  */
-- (void)pause
+- (void)restart
 {
+    // 現在日付を取得
+    startDate = [NSDate dateWithTimeIntervalSinceNow:(-1 * pauseTime)];
+    
+    // タイマーセット
+    timer = [NSTimer scheduledTimerWithTimeInterval:clock 
+                                             target:self 
+                                           selector:@selector(doTimer:) 
+                                           userInfo:nil 
+                                            repeats:YES];    
 }
+
+/**
+ * 時間計測一時停止
+ * @return 経過時間
+ */
+- (NSTimeInterval)pause
+{
+    [timer invalidate];
+    timer = nil;
+    
+    pauseTime = [[NSDate date] timeIntervalSinceDate:startDate];
+    return pauseTime;
+}
+
+//- (void)doTimer:(NSDate *)date
+//{
+//    NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:date];
+//    NSLog(@"%f",interval);
+//}
 
 /**
  * タイマーのイベントハンドラ
